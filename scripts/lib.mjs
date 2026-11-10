@@ -2,7 +2,7 @@
 import sharp from 'sharp';
 import * as ort from 'onnxruntime-node';
 import { crop } from '../src/core/image.js';
-import { analyzeImage } from '../src/core/pipeline.js';
+import { analyzeImage, featurizePanel } from '../src/core/pipeline.js';
 import { splitPanels } from '../src/core/panels.js';
 import { dHash, pHash } from '../src/core/hash.js';
 import { preprocess, featurize, hydrate, SIZE, LAYERS } from '../src/core/embed.js';
@@ -21,4 +21,5 @@ const runModel = async (tensor) => {
   return Object.fromEntries(LAYERS.map((n) => [n, out[n].data]));
 };
 export const analyze = (img) => analyzeImage(img, runModel);
+export const featurize1 = (panel) => featurizePanel(panel, runModel);
 export { crop, splitPanels };

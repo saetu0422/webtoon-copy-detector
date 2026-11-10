@@ -64,6 +64,7 @@ export function searchPanel(q, gallery, { topK = 6 } = {}) {
     const m = matchPair(q, topHash.c);
     best = { ...topHash, m: m.heat ? m : { struct: 1, coverage: 1, covQ: 1, texture: 1, heat: null, heatC: null, T: null }, domain: 'color' };
   }
+  if (best) res.raw = { id: best.c.id, struct: best.hash >= TH.hashExact ? 1 : best.m.struct };
   if (!best) {
     const top = cands.reduce((a, b) => (b.sem > a.sem ? b : a));
     if (top.sem >= TH.similarScene) res.similar = { id: top.c.id, sem: top.sem };

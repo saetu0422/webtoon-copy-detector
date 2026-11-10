@@ -243,6 +243,10 @@ $('clearResults').addEventListener('click', () => { $('results').replaceChildren
 try { $('aiToggle').checked = localStorage.getItem('wcd-ai') !== '0'; } catch { /* 저장소 불가 */ }
 $('aiToggle').addEventListener('change', () => { try { localStorage.setItem('wcd-ai', $('aiToggle').checked ? '1' : '0'); } catch { /* 무시 */ } });
 
+// 사용법 안내: 한 번 접으면 다음 방문부터 접힌 채로 둔다
+try { if (localStorage.getItem('wcd-guide') === '0') $('guide').open = false; } catch { /* 무시 */ }
+$('guide').addEventListener('toggle', () => { try { localStorage.setItem('wcd-guide', $('guide').open ? '1' : '0'); } catch { /* 무시 */ } });
+
 (async () => {
   try {
     const { threads } = await call('init', { base: new URL('.', location.href).href });
