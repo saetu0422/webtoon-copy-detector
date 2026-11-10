@@ -14,6 +14,8 @@ npm run dev
 
 배포용 빌드는 `npm run build` 후 `dist/` 폴더를 정적 호스팅에 올리면 됩니다. 모델 파일(`public/models/`, 약 108MB)이 함께 올라갑니다.
 
+`main`에 푸시하면 `.github/workflows/pages.yml`이 빌드해서 GitHub Pages에 배포합니다 (저장소 Settings → Pages의 Source가 "GitHub Actions"여야 합니다).
+
 - 서버가 `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Embedder-Policy: require-corp` 헤더를 주면 WASM 멀티스레드가 켜져 더 빠릅니다. 헤더가 없어도 단일 스레드로 동작합니다.
 - `onnxruntime-web` 버전을 올리면 `public/ort/`의 두 파일도 `node_modules/onnxruntime-web/dist/`에서 다시 복사해야 합니다.
 
