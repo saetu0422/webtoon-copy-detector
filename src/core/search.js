@@ -8,12 +8,6 @@ import { NP } from './embed.js';
 // 컷 하나는 놓쳐도 이미지 단위 집계에서 다른 컷이 잡아 주므로 오탐을 줄이는 쪽으로 잡았다.
 export const TH = { strong: 0.68, weak: 0.64, hashExact: 0.9, minContent: 24, similarScene: 0.75, styleKeep: 0.6 };
 
-export const TYPE_LABEL = {
-  exact: '동일 복제',
-  edited: '편집 복제',
-  trace: '트레이싱·재작화 의심',
-};
-
 const contentCount = (mask) => { let n = 0; for (let p = 0; p < NP; p++) if (mask[p] === 2) n++; return n; };
 
 /** 구도 점수 → 0~100 표시 점수 */

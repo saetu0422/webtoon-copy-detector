@@ -8,7 +8,7 @@ A static website that checks whether a suspect image copies your webtoon. You re
 
 **https://saetu0422.github.io/webtoon-copy-detector/**
 
-You can test it at the address above without installing anything. The interface is in Korean; a usage guide is at the top of the page.
+You can test it at the address above without installing anything. The interface is available in English and Korean (switch with the button at the top right); a usage guide is at the top of the page.
 
 - This is a trial demo. The address or behavior may change without notice.
 - Uploaded images are not sent to a server, and the gallery is stored only in the browser you are using.

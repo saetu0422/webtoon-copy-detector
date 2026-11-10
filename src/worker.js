@@ -18,7 +18,7 @@ async function fetchModel(file, label, reqId) {
   try { cache = await caches.open('wcd-models-v1'); resp = await cache.match(url); } catch { /* 캐시 불가 환경 */ }
   if (!resp) {
     resp = await fetch(url);
-    if (!resp.ok) throw new Error(`${label} 모델을 불러오지 못했습니다 (${resp.status})`);
+    if (!resp.ok) throw new Error(`E_MODEL:${label}:${resp.status}`);
     if (cache) cache.put(url, resp.clone()).catch(() => {});
   }
   const total = +resp.headers.get('content-length') || 0;
@@ -29,7 +29,7 @@ async function fetchModel(file, label, reqId) {
     const { done, value } = await reader.read();
     if (done) break;
     chunks.push(value); got += value.length;
-    post({ type: 'progress', reqId, text: `${label} 모델 불러오는 중`, done: got, total: total || got });
+    post({ type: 'progress', reqId, key: 'modelLoad', label, done: got, total: total || got });
   }
   const buf = new Uint8Array(got);
   let o = 0;
@@ -38,11 +38,11 @@ async function fetchModel(file, label, reqId) {
 }
 
 async function ensureDino(reqId) {
-  dino ??= fetchModel('dinov2s_int8.onnx', '복제 탐지', reqId);
+  dino ??= fetchModel('dinov2s_int8.onnx', 'copy', reqId);
   return dino;
 }
 async function ensureAi(reqId) {
-  aiSession ??= fetchModel('anime_ai_detector_int8.onnx', 'AI 생성 탐지', reqId);
+  aiSession ??= fetchModel('anime_ai_detector_int8.onnx', 'ai', reqId);
   return aiSession;
 }
 
@@ -55,7 +55,7 @@ const runDino = async (tensor) => {
 /** 파일 → RGBA. 세로로 매우 긴 이미지도 띠 단위로 읽는다. */
 async function decode(file) {
   let bmp;
-  try { bmp = await createImageBitmap(file); } catch { throw new Error('이미지를 열 수 없습니다 (형식 미지원 또는 크기 초과)'); }
+  try { bmp = await createImageBitmap(file); } catch { throw new Error('E_DECODE'); }
   const scale = Math.min(1, 1200 / bmp.width, Math.sqrt(40e6 / (bmp.width * bmp.height)));
   const w = Math.max(1, Math.round(bmp.width * scale)), h = Math.max(1, Math.round(bmp.height * scale));
   const data = new Uint8ClampedArray(w * h * 4);
@@ -106,7 +106,7 @@ const handlers = {
     await ensureDino(reqId);
     const img = await decode(file);
     const panels = await analyzeImage(img, runDino, {
-      onProgress: (done, total) => post({ type: 'progress', reqId, text: `${file.name} 분석 중`, done, total }),
+      onProgress: (done, total) => post({ type: 'progress', reqId, key: 'analyzing', name: file.name, done, total }),
     });
     const records = [];
     for (const p of panels) {
@@ -122,14 +122,14 @@ const handlers = {
     await ensureDino(reqId);
     const img = await decode(file);
     const panels = await analyzeImage(img, runDino, {
-      onProgress: (done, total) => post({ type: 'progress', reqId, text: `${file.name} 컷 분석 중`, done, total }),
+      onProgress: (done, total) => post({ type: 'progress', reqId, key: 'panels', name: file.name, done, total }),
     });
     const gal = [...gallery.values()];
     const results = [];
     for (const [i, p] of panels.entries()) {
       const r = searchPanel(p, gal);
       results.push({ ...r, index: i, box: p.box, thumb: r.level !== 'none' ? await thumb(p.image) : null });
-      if (i % 4 === 0) post({ type: 'progress', reqId, text: `${file.name} 갤러리와 비교 중`, done: i + 1, total: panels.length });
+      if (i % 4 === 0) post({ type: 'progress', reqId, key: 'comparing', name: file.name, done: i + 1, total: panels.length });
     }
     const summary = aggregate(results.filter((r) => !r.skip));
     summary.skipped = results.filter((r) => r.skip).length;
@@ -144,7 +144,7 @@ const handlers = {
         const jobs = targets.flatMap((t) => aiViews(t.p.image, 1).map((v) => ({ v, i: t.i })));
         const probs = [], perPanel = {};
         for (const [k, j] of jobs.entries()) {
-          post({ type: 'progress', reqId, text: `${file.name} AI 생성 여부 검사 중 (실험적)`, done: k, total: jobs.length });
+          post({ type: 'progress', reqId, key: 'aiChecking', name: file.name, done: k, total: jobs.length });
           const out = await s.run({ pixel_values: new ort.Tensor('float32', aiTensor(j.v), [1, 3, AI_SIZE, AI_SIZE]) });
           const pr = aiProb(out.logits.data);
           probs.push(pr);
