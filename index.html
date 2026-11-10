@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>웹툰 복제 탐지기</title>
+  <meta name="description" content="원본 웹툰을 등록해 두고 의심 이미지의 복제·편집·트레이싱 여부를 브라우저 안에서 검사합니다." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231f2a44'/%3E%3Crect x='6' y='6' width='12' height='9' fill='%23fff'/%3E%3Crect x='14' y='17' width='12' height='9' fill='%23ff6b4a'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <span class="logo" aria-hidden="true"><i></i><i></i></span>
+      <div>
+        <h1>웹툰 복제 탐지기</h1>
+        <p>원본을 등록하고, 의심 이미지를 올리면 컷 단위로 복제 여부를 찾아냅니다.</p>
+      </div>
+    </div>
+    <div class="status" id="status" title="모든 분석은 이 브라우저 안에서만 이뤄지며 이미지는 어디에도 전송되지 않습니다.">
+      <span class="dot"></span><span id="statusText">준비 중…</span>
+    </div>
+  </header>
+
+  <div class="progress" id="progress" hidden>
+    <div class="bar"><span id="progressBar"></span></div>
+    <div class="label" id="progressLabel"></div>
+  </div>
+
+  <main>
+    <section class="pane" aria-labelledby="galleryTitle">
+      <div class="pane-head">
+        <h2 id="galleryTitle"><span class="step">1</span> 원본 갤러리</h2>
+        <span class="count" id="galleryCount"></span>
+      </div>
+      <form id="addForm" class="add">
+        <input id="workName" type="text" placeholder="작품명 (예: 내 웹툰 12화)" maxlength="60" autocomplete="off" />
+        <label class="drop" id="galleryDrop">
+          <input id="galleryFiles" type="file" accept="image/*" multiple hidden />
+          <strong>원본 이미지 추가</strong>
+          <span>여러 장을 끌어다 놓거나 눌러서 선택</span>
+        </label>
+      </form>
+      <ul class="works" id="works"></ul>
+      <p class="empty" id="galleryEmpty">아직 등록된 원본이 없습니다. 내 작품의 원고 이미지를 먼저 등록하세요.</p>
+    </section>
+
+    <section class="pane" aria-labelledby="checkTitle">
+      <div class="pane-head">
+        <h2 id="checkTitle"><span class="step">2</span> 의심 이미지 검사</h2>
+        <button type="button" class="ghost" id="clearResults" hidden>결과 지우기</button>
+      </div>
+      <label class="drop big" id="checkDrop">
+        <input id="checkFiles" type="file" accept="image/*" multiple hidden />
+        <strong>검사할 이미지 올리기</strong>
+        <span>불법 공유본, 도용이 의심되는 그림 등을 끌어다 놓으세요</span>
+      </label>
+      <label class="toggle">
+        <input type="checkbox" id="aiToggle" checked />
+        <span>AI 생성 여부도 검사 <em class="exp">실험적</em></span>
+        <small>처음 사용할 때 탐지 모델(약 89MB)을 한 번 내려받습니다.</small>
+      </label>
+      <div id="results" class="results"></div>
+    </section>
+  </main>
+
+  <footer>
+    <details>
+      <summary>어떻게 판정하나요? · 한계</summary>
+      <div class="about">
+        <ol>
+          <li><b>컷 분리</b> — 세로로 긴 원고를 여백 기준으로 컷으로 나눕니다. 말풍선·자막만 있는 컷은 근거에서 제외합니다.</li>
+          <li><b>해시 비교</b> — pHash·dHash로 동일본과 재압축·축소본을 즉시 찾습니다.</li>
+          <li><b>다층 특징 검색</b> — DINOv2의 중간 층과 마지막 층 특징을 함께 써서 후보 컷을 고릅니다 (GILA, arXiv 2611.00017의 다층 표현 아이디어).</li>
+          <li><b>패치 대응 + 기하 검증</b> — 패치 친화도로 대응점을 찾고 위치 관계가 일관된 영역만 복제 영역으로 표시합니다 (CopyNCE, arXiv 2602.17484의 패치 친화도 아이디어).</li>
+          <li><b>선화 재비교</b> — 색을 버리고 윤곽선만 남겨 다시 비교해 재채색·트레이싱을 잡습니다.</li>
+          <li><b>반증 원칙 집계</b> — 컷 하나라도 복제면 이미지 전체를 복제로 봅니다 (Learning to Falsify, arXiv 2611.04529).</li>
+        </ol>
+        <p><b>한계.</b> 이 도구는 1차 선별용입니다. 같은 작가가 같은 구도를 재사용한 컷, 말풍선이 큰 컷은 오탐이 날 수 있고, 손으로 다시 그린 트레이싱은 놓칠 수 있습니다. 판정은 반드시 나란히 놓인 그림을 눈으로 확인하세요.</p>
+        <p><b>AI 생성 표시(실험적).</b> 공개 분류기(legekka/AI-Anime-Image-Detector-ViT)를 여러 시야에 적용해 집계합니다. 자체 점검에서 사람이 그린 웹툰을 AI로 오판한 경우는 드물었지만, 학습에 없던 생성기의 이미지는 상당수 놓쳤습니다. “AI 생성” 표시는 참고용이며 근거로 단정해서는 안 됩니다.</p>
+      </div>
+    </details>
+  </footer>
+
+  <template id="resultTpl">
+    <article class="result">
+      <header>
+        <div class="verdict"><span class="badge"></span><span class="ai-badge" hidden></span></div>
+        <div class="file"></div>
+        <div class="meta"></div>
+      </header>
+      <div class="matches"></div>
+    </article>
+  </template>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

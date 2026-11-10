@@ -1,0 +1,20 @@
+{
+  "name": "webtoon-copy-detector",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "eval": "node scripts/e2e.mjs"
+  },
+  "dependencies": {
+    "onnxruntime-web": "^1.31.1"
+  },
+  "devDependencies": {
+    "onnxruntime-node": "^1.31.1",
+    "sharp": "^0.35.5",
+    "vite": "^8.3.7"
+  }
+}
