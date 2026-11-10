@@ -1,8 +1,20 @@
-# 웹툰 복제 탐지기
+# Webtoon Copy Detector
 
-원본 웹툰 이미지를 브라우저에 등록해 두고, 의심 이미지를 올리면 컷 단위로 복제·편집·트레이싱 여부를 찾아내는 정적 웹사이트입니다. 모든 분석은 브라우저 안에서 이뤄지며 이미지는 어디에도 전송되지 않습니다.
+**English** | [한국어](README.ko.md)
 
-## 실행
+A static website that checks whether a suspect image copies your webtoon. You register your original pages in the browser, upload a suspect image, and it reports copied, edited, or traced panels one by one. All analysis runs in the browser, and no image is sent anywhere.
+
+## Try it now
+
+**https://saetu0422.github.io/webtoon-copy-detector/**
+
+You can test it at the address above without installing anything. The interface is in Korean; a usage guide is at the top of the page.
+
+- This is a trial demo. The address or behavior may change without notice.
+- Uploaded images are not sent to a server, and the gallery is stored only in the browser you are using.
+- The first check downloads the models once (about 24 MB for copy detection and 89 MB for AI-image detection).
+
+## Run locally
 
 ```bash
 npm install
@@ -12,94 +24,94 @@ npm install
 npm run dev
 ```
 
-배포용 빌드는 `npm run build` 후 `dist/` 폴더를 정적 호스팅에 올리면 됩니다. 모델 파일(`public/models/`, 약 108MB)이 함께 올라갑니다.
+For deployment, run `npm run build` and upload the `dist/` folder to any static host. The model files (`public/models/`, about 108 MB) are included.
 
-`main`에 푸시하면 `.github/workflows/pages.yml`이 빌드해서 GitHub Pages에 배포합니다 (저장소 Settings → Pages의 Source가 "GitHub Actions"여야 합니다).
+Pushing to `main` builds and deploys to GitHub Pages through `.github/workflows/pages.yml` (the repository's Settings → Pages → Source must be "GitHub Actions").
 
-- 서버가 `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Embedder-Policy: require-corp` 헤더를 주면 WASM 멀티스레드가 켜져 더 빠릅니다. 헤더가 없어도 단일 스레드로 동작합니다.
-- `onnxruntime-web` 버전을 올리면 `public/ort/`의 두 파일도 `node_modules/onnxruntime-web/dist/`에서 다시 복사해야 합니다.
+- If the server sends `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp`, WASM multithreading turns on and inference is faster. Without them it runs single-threaded.
+- When you upgrade `onnxruntime-web`, copy the two files in `public/ort/` again from `node_modules/onnxruntime-web/dist/`.
 
-## 판정 과정
+## How a verdict is made
 
-![웹툰 복제 판정 설계도](docs/architecture.png)
+![Detection pipeline diagram (labels in Korean)](docs/architecture.png)
 
-설계도 원본은 `docs/architecture.svg`이며 `python tools/make_diagram.py`로 다시 생성합니다.
+The diagram labels are in Korean; the steps below follow it from top to bottom. Its source is `docs/architecture.svg`, regenerated with `python tools/make_diagram.py`.
 
-1. **컷 분리** (`src/core/panels.js`) — 여백 기준 재귀 XY-cut. 색이 2~3개뿐인 말풍선·자막 컷과 내용이 거의 없는 컷은 근거에서 뺍니다.
-2. **해시** (`hash.js`) — pHash + dHash, 좌우반전본 포함.
-3. **다층 특징 검색** (`embed.js`, `match.js`) — DINOv2-small의 4·8·12층 토큰을 내보내 층별 전역 기술자로 후보를 고릅니다.
-4. **패치 대응 + 기하 검증** (`match.js`) — 패치 친화도 최근접 대응 → RANSAC(배율·이동·반전) → 정렬된 패치 유사도 맵. 이 맵이 화면의 히트맵입니다.
-5. **선화 재비교** (`pipeline.js`) — 색 도메인에서 확신이 없으면 윤곽선만 남긴 그림끼리 다시 비교합니다.
-6. **집계** (`search.js`) — 컷 하나라도 복제면 이미지 전체를 복제로 봅니다.
-7. **AI 생성 표시, 실험적** (`aidetect.js`) — 공개 분류기를 큰 컷 3개의 여러 시야에 적용하고 상위 2개 확률을 평균합니다.
+1. **Panel splitting** (`src/core/panels.js`): recursive XY-cut on the gutters. Panels with only two or three colors (speech bubbles, captions) and nearly empty panels are excluded as evidence.
+2. **Hashing** (`hash.js`): pHash and dHash, including horizontally flipped versions.
+3. **Multi-layer feature search** (`embed.js`, `match.js`): DINOv2-small exports tokens from layers 4, 8 and 12, and per-layer global descriptors pick the candidate panels.
+4. **Patch correspondence and geometric verification** (`match.js`): nearest-neighbor patch matches, then RANSAC over scale, translation and flip, then an aligned patch-similarity map. That map is the heatmap shown on screen.
+5. **Line-art re-comparison** (`pipeline.js`): when the color comparison is not confident, both panels are reduced to outlines and compared again.
+6. **Aggregation** (`search.js`): if any one panel is a copy, the whole image is treated as a copy.
+7. **AI-generated indicator, experimental** (`aidetect.js`): a public classifier runs on several views of the three largest panels, and the top two probabilities are averaged.
 
-참고한 연구: Learning to Falsify (arXiv 2611.04529, 반증 원칙 집계), GILA (arXiv 2611.00017, 다층 표현), CopyNCE (arXiv 2602.17484, 패치 친화도). 이 논문들의 학습 방법을 재현한 것이 아니라, 사전학습 모델 위에 아이디어를 적용한 것입니다.
+Research this draws on: Learning to Falsify (arXiv 2611.04529, falsification-style aggregation), GILA (arXiv 2611.00017, multi-layer representations), and CopyNCE (arXiv 2602.17484, patch affinity). It does not reproduce their training methods; it applies the ideas on top of pretrained models.
 
-## 자체 점검 수치
+## Self-check results
 
-실제 웹툰 10개 작품(각 4000px 청크 3개를 갤러리로, 컷 198개)으로 `node scripts/e2e.mjs <청크 폴더>`를 돌린 결과입니다.
+Results of `node scripts/e2e.mjs <chunk folder>` on 10 real webtoon series (three 4000 px chunks per series as the gallery, 198 panels).
 
-| 경우 | 이미지 단위 "가능성 높음" | 컷 일치율 |
+| Case | Images flagged "likely copy" | Panel match rate |
 |---|---|---|
-| 재압축+축소 / 좌우반전 / 색조 변경 / 대사 제거 | 15/15 | 0.99~1.00 |
-| 부분 잘라내기 | 15/15 | 0.79 |
-| 워터마크+여백 | 15/15 | 0.95 |
-| 재채색 트레이싱(합성 모사) | 15/15 | 0.78 |
-| 선화 트레이싱(합성 모사) | 12/15 | 0.55 |
-| 같은 작품의 다른 페이지(음성) | 0/28 ("의심" 6/28) | 확정 0.0%, 의심 5.7% |
+| Recompress + downscale / flip / hue shift / dialogue removed | 15/15 | 0.99–1.00 |
+| Partial crop | 15/15 | 0.79 |
+| Watermark + padding | 15/15 | 0.95 |
+| Recolored tracing (synthetic) | 15/15 | 0.78 |
+| Line-art tracing (synthetic) | 12/15 | 0.55 |
+| Other pages of the same series (negatives) | 0/28 ("suspected": 6/28) | likely 0.0%, suspected 5.7% |
 
-트레이싱 두 줄은 필터로 만든 모사본이라 손으로 다시 그린 실제 트레이싱의 성능을 뜻하지 않습니다. 임계값(`search.js`의 `TH`)은 이 10개 작품에 맞춘 값이라 화풍이 크게 다른 작품에서는 달라질 수 있습니다.
+The two tracing rows use filter-generated imitations, so they do not show performance on tracing redrawn by hand. The thresholds (`TH` in `search.js`) were fitted to these 10 series and may need adjusting for very different art styles.
 
-AI 생성 분류기는 사람이 그린 웹툰 40장 중 0~1장을 AI로 오판했고, NijiJourney 생성 이미지 24장 중 7장만 잡았습니다(`tools/test_aidet.py`).
+The AI-image classifier misjudged 0 to 1 of 40 human-drawn webtoon crops as AI, and caught only 7 of 24 NijiJourney images (`tools/test_aidet.py`).
 
-## 다른 모델과의 비교
+## Comparison with other models
 
-같은 컷으로 직접 측정했습니다. 갤러리 컷 181개, 변형 복제 질의 549개(컷 61개 × 변형 9종), 음성 질의 158개(같은 작품들의 다른 페이지 컷)입니다. 기준 모델은 컷을 정사각으로 리사이즈해 전역 임베딩의 코사인 유사도로 갤러리를 검색했습니다.
+Measured directly on the same panels: 181 gallery panels, 549 copy queries (61 panels × 9 transformations), and 158 negative queries (panels from other pages of the same series). Baseline models take each panel resized to a square and search the gallery by cosine similarity of their global embedding.
 
-| 방법 | 원본 찾기 정확도 | 검출률 (오탐 5%) | 검출률 (오탐 1%) | 일반 편집 7종 | 트레이싱 모사 2종 |
+| Method | Source retrieval accuracy | Detection rate (5% false positives) | Detection rate (1% false positives) | 7 ordinary edits | 2 synthetic tracings |
 |---|---|---|---|---|---|
-| **본 시스템 (전체)** | 98.4% | 89.1% | 86.5% | 95.3% | 67.2% |
-| SSCD ResNet-50 (복제 탐지 전용 모델) | 96.5% | 75.2% | 68.9% | 95.8% | 3.3% |
+| **This system (full)** | 98.4% | 89.1% | 86.5% | 95.3% | 67.2% |
+| SSCD ResNet-50 (copy-detection model) | 96.5% | 75.2% | 68.9% | 95.8% | 3.3% |
 | DINOv2-base (CLS) | 94.2% | 64.7% | 57.6% | 78.2% | 17.2% |
-| 본 시스템의 2차 단계만 (DINOv2-small 다층 전역 기술자) | 94.2% | 70.1% | 60.5% | 85.0% | 18.0% |
+| Stage 2 of this system only (DINOv2-small multi-layer global descriptor) | 94.2% | 70.1% | 60.5% | 85.0% | 18.0% |
 | DINOv2-small (CLS) | 91.8% | 58.5% | 55.2% | 74.0% | 4.1% |
 | CLIP ViT-B/32 | 85.1% | 47.2% | 35.9% | 60.2% | 1.6% |
-| 본 시스템의 1차 단계만 (pHash + dHash) | 61.7% | 57.6% | 56.5% | 57.6% | 57.4% |
+| Stage 1 of this system only (pHash + dHash) | 61.7% | 57.6% | 56.5% | 57.6% | 57.4% |
 
-- **원본 찾기 정확도**: 갤러리에서 1순위로 뽑은 컷이 실제 원본인 비율.
-- **검출률 (오탐 N%)**: 음성 질의의 N%만 걸리도록 임계값을 잡았을 때, 복제 질의가 올바른 원본과 함께 잡힌 비율. 임계값에 의존하지 않는 비교를 위해 방법마다 임계값을 따로 잡았습니다.
+- **Source retrieval accuracy**: how often the top-ranked gallery panel is the true source.
+- **Detection rate (N% false positives)**: with the threshold set so that N% of negative queries are flagged, the share of copy queries flagged together with the correct source. Each method gets its own threshold so the comparison does not depend on one.
 
-변형별 검출률 (오탐 5% 기준):
+Detection rate per transformation (at 5% false positives):
 
-| 변형 | 본 시스템 | SSCD | DINOv2-base | CLIP | pHash+dHash |
+| Transformation | This system | SSCD | DINOv2-base | CLIP | pHash+dHash |
 |---|---|---|---|---|---|
-| 재압축+축소 | 100% | 100% | 100% | 100% | 100% |
-| 색조 변경 | 100% | 100% | 100% | 77% | 100% |
-| 좌우반전 | 100% | 100% | 100% | 92% | 2% |
-| 대사 제거 | 100% | 100% | 97% | 87% | 100% |
-| 워터마크 | 97% | 100% | 89% | 16% | 100% |
-| 가운데 잘라내기 | 98% | 100% | 51% | 34% | 2% |
-| 모서리 잘라내기 | 72% | 70% | 11% | 15% | 0% |
-| 재채색 트레이싱(모사) | 80% | 7% | 33% | 3% | 95% |
-| 선화 트레이싱(모사) | 54% | 0% | 2% | 0% | 20% |
+| Recompress + downscale | 100% | 100% | 100% | 100% | 100% |
+| Hue shift | 100% | 100% | 100% | 77% | 100% |
+| Horizontal flip | 100% | 100% | 100% | 92% | 2% |
+| Dialogue removed | 100% | 100% | 97% | 87% | 100% |
+| Watermark | 97% | 100% | 89% | 16% | 100% |
+| Center crop | 98% | 100% | 51% | 34% | 2% |
+| Corner crop | 72% | 70% | 11% | 15% | 0% |
+| Recolored tracing (synthetic) | 80% | 7% | 33% | 3% | 95% |
+| Line-art tracing (synthetic) | 54% | 0% | 2% | 0% | 20% |
 
-**읽을 때 주의할 점**
+**Caveats**
 
-- 본 시스템의 설계(말풍선 컷 필터, 특징 중심화, 선화 재비교)는 이 10개 작품을 보면서 정했고, 기준 모델은 공개 가중치를 그대로 썼습니다. 다른 작품에서는 격차가 줄 수 있습니다.
-- 격차의 대부분은 트레이싱 모사 2종에서 나옵니다. 이 변형은 필터로 합성한 것이고 본 시스템의 선화 단계가 바로 이 유형을 겨냥해 만들어졌습니다. 일반 편집 7종만 보면 SSCD와 비슷합니다.
-- 음성 질의가 158개뿐이라 오탐 1% 지점은 표본 1~2개로 정해집니다. 5% 기준이 더 안정적입니다.
-- 본 시스템은 질의 컷마다 모델을 두 번 돌리고 후보 6~12개와 패치 대응을 하므로, 전역 임베딩 한 번으로 끝나는 기준 모델보다 느리고 대규모 갤러리에는 맞지 않습니다.
-- SSCD 가중치는 Hugging Face 미러(m3/sscd-copy-detection)에서 받았습니다.
+- The design of this system (speech-bubble filter, feature centering, line-art re-comparison) was chosen while looking at these 10 series, and the baselines use public weights as they are. The gap may shrink on other works.
+- Most of the gap comes from the two synthetic tracings. They are generated with filters, and the line-art stage was built for exactly this kind of change. On the seven ordinary edits alone the system is about level with SSCD.
+- With only 158 negative queries, the 1% false-positive point is set by one or two samples. The 5% figures are more stable.
+- For each query panel this system runs the model twice and does patch matching against 6 to 12 candidates, so it is slower than a baseline that needs one global embedding, and it does not suit large galleries.
+- The SSCD weights came from a Hugging Face mirror (m3/sscd-copy-detection).
 
-재현: `node scripts/bench.mjs <청크 폴더> <출력 폴더>` 후 `python tools/bench_baselines.py <출력 폴더>`. 원 수치는 `docs/benchmark.json`에 있습니다.
+To reproduce: `node scripts/bench.mjs <chunk folder> <output folder>`, then `python tools/bench_baselines.py <output folder>`. The raw numbers are in `docs/benchmark.json`.
 
-## 라이선스
+## License
 
-이 프로젝트의 코드는 [Apache License 2.0](LICENSE)으로 공개합니다. 누구나 무료로 사용·수정·재배포할 수 있고 상업적 이용도 가능합니다. 재배포할 때는 `LICENSE`와 `NOTICE`를 함께 포함하고, 수정한 파일에는 수정 사실을 표시해 주세요.
+The code in this project is released under the [Apache License 2.0](LICENSE). Anyone may use, modify and redistribute it free of charge, including commercially. When redistributing, include `LICENSE` and `NOTICE`, and mark the files you changed.
 
-함께 배포하는 모델과 런타임은 각자의 라이선스를 따릅니다 (`NOTICE`, `THIRD_PARTY_LICENSES.md`).
+The bundled models and runtime keep their own licenses (`NOTICE`, `THIRD_PARTY_LICENSES.md`).
 
-- `dinov2s_int8.onnx` — facebook/dinov2-small (Apache-2.0)을 `tools/export_dinov2.py`로 변환·int8 양자화.
-- `anime_ai_detector_int8.onnx` — legekka/AI-Anime-Image-Detector-ViT (Apache-2.0)의 onnx-community 변환본.
-- `public/ort/` — ONNX Runtime Web (MIT).
-- `src/core/centers.js` — `scripts/centers.mjs`가 계산한 층별 평균 토큰. 비영리 조건(CC BY-NC)으로 공개된 웹툰 샘플에서 계산한 통계값이므로, 상업적으로 쓸 때는 본인 원고로 다시 계산하길 권합니다.
+- `dinov2s_int8.onnx`: facebook/dinov2-small (Apache-2.0), exported and int8-quantized with `tools/export_dinov2.py`.
+- `anime_ai_detector_int8.onnx`: the onnx-community conversion of legekka/AI-Anime-Image-Detector-ViT (Apache-2.0).
+- `public/ort/`: ONNX Runtime Web (MIT).
+- `src/core/centers.js`: per-layer mean tokens computed by `scripts/centers.mjs`. They are statistics computed from webtoon samples published under a non-commercial license (CC BY-NC), so for commercial use we recommend recomputing them from your own pages.
