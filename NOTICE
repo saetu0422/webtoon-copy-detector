@@ -1,0 +1,24 @@
+웹툰 복제 탐지기 (webtoon-copy-detector)
+Copyright 2026 saetu0422
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+It bundles the following third-party components. Their licenses apply to
+those files; full texts are in THIRD_PARTY_LICENSES.md.
+
+1. DINOv2 (facebook/dinov2-small) — Copyright (c) Meta Platforms, Inc. and affiliates.
+   Apache License 2.0. https://github.com/facebookresearch/dinov2
+   File: public/models/dinov2s_int8.onnx
+   Modified: exported to ONNX with outputs for layers 4, 8 and 12, and
+   quantized to 8-bit integers (tools/export_dinov2.py).
+
+2. AI Anime Image Detector ViT (legekka/AI-Anime-Image-Detector-ViT), ONNX
+   conversion by onnx-community. Apache License 2.0.
+   https://huggingface.co/legekka/AI-Anime-Image-Detector-ViT
+   https://huggingface.co/onnx-community/AI-Anime-Image-Detector-ViT-ONNX
+   File: public/models/anime_ai_detector_int8.onnx (unmodified int8 variant, renamed)
+
+3. ONNX Runtime Web — Copyright (c) Microsoft Corporation. MIT License.
+   https://github.com/microsoft/onnxruntime
+   Files: public/ort/ort-wasm-simd-threaded.mjs, public/ort/ort-wasm-simd-threaded.wasm,
+   and the runtime code bundled into the built site.

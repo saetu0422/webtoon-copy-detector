@@ -161,3 +161,4 @@ footer summary { cursor: pointer; padding: 6px 0; }
 .bench tr.ours td { font-weight: 700; color: var(--ink); background: var(--accent-soft); }
 footer details + details { margin-top: 4px; }
 footer a { color: var(--accent); }
+.legal { margin-top: 14px; font-size: 12.5px; }

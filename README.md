@@ -93,8 +93,13 @@ AI 생성 분류기는 사람이 그린 웹툰 40장 중 0~1장을 AI로 오판�
 
 재현: `node scripts/bench.mjs <청크 폴더> <출력 폴더>` 후 `python tools/bench_baselines.py <출력 폴더>`. 원 수치는 `docs/benchmark.json`에 있습니다.
 
-## 모델과 라이선스
+## 라이선스
+
+이 프로젝트의 코드는 [Apache License 2.0](LICENSE)으로 공개합니다. 누구나 무료로 사용·수정·재배포할 수 있고 상업적 이용도 가능합니다. 재배포할 때는 `LICENSE`와 `NOTICE`를 함께 포함하고, 수정한 파일에는 수정 사실을 표시해 주세요.
+
+함께 배포하는 모델과 런타임은 각자의 라이선스를 따릅니다 (`NOTICE`, `THIRD_PARTY_LICENSES.md`).
 
 - `dinov2s_int8.onnx` — facebook/dinov2-small (Apache-2.0)을 `tools/export_dinov2.py`로 변환·int8 양자화.
 - `anime_ai_detector_int8.onnx` — legekka/AI-Anime-Image-Detector-ViT (Apache-2.0)의 onnx-community 변환본.
-- `src/core/centers.js` — `scripts/centers.mjs`가 계산한 층별 평균 토큰.
+- `public/ort/` — ONNX Runtime Web (MIT).
+- `src/core/centers.js` — `scripts/centers.mjs`가 계산한 층별 평균 토큰. 비영리 조건(CC BY-NC)으로 공개된 웹툰 샘플에서 계산한 통계값이므로, 상업적으로 쓸 때는 본인 원고로 다시 계산하길 권합니다.

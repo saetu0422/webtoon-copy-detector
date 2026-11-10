@@ -1,6 +1,5 @@
 {
   "name": "webtoon-copy-detector",
-  "private": true,
   "version": "0.1.0",
   "type": "module",
   "scripts": {
@@ -16,5 +15,7 @@
     "onnxruntime-node": "^1.31.1",
     "sharp": "^0.35.5",
     "vite": "^8.3.7"
-  }
+  },
+  "license": "Apache-2.0",
+  "private": true
 }
