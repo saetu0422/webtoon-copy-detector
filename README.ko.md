@@ -35,7 +35,7 @@ npm run dev
 
 ![웹툰 복제 판정 설계도](docs/architecture.png)
 
-설계도 원본은 `docs/architecture.svg`이며 `python tools/make_diagram.py`로 다시 생성합니다.
+설계도 원본은 `docs/architecture.svg`(영어판은 `docs/architecture.en.svg`)이며 `python tools/make_diagram.py`로 다시 생성합니다.
 
 1. **컷 분리** (`src/core/panels.js`) — 여백 기준 재귀 XY-cut. 색이 2~3개뿐인 말풍선·자막 컷과 내용이 거의 없는 컷은 근거에서 뺍니다.
 2. **해시** (`hash.js`) — pHash + dHash, 좌우반전본 포함.

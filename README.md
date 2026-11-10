@@ -33,9 +33,9 @@ Pushing to `main` builds and deploys to GitHub Pages through `.github/workflows/
 
 ## How a verdict is made
 
-![Detection pipeline diagram (labels in Korean)](docs/architecture.png)
+![Detection pipeline diagram](docs/architecture.en.png)
 
-The diagram labels are in Korean; the steps below follow it from top to bottom. Its source is `docs/architecture.svg`, regenerated with `python tools/make_diagram.py`.
+The diagram source is `docs/architecture.en.svg`, regenerated with `python tools/make_diagram.py`.
 
 1. **Panel splitting** (`src/core/panels.js`): recursive XY-cut on the gutters. Panels with only two or three colors (speech bubbles, captions) and nearly empty panels are excluded as evidence.
 2. **Hashing** (`hash.js`): pHash and dHash, including horizontally flipped versions.

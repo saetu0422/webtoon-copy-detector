@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 1440" width="1280" height="1440" font-family="'Inter', 'Helvetica Neue', Arial, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#1c2233"/></marker></defs>
+<rect width="1280" height="1440" fill="#f4f2ee"/>
+<text x="60" y="58" font-size="28" font-weight="800" fill="#1c2233" text-anchor="start">Webtoon copy detection pipeline</text>
+<text x="60" y="86" font-size="15" font-weight="400" fill="#5b657c" text-anchor="start">From one image to a verdict: which model or algorithm handles each stage</text>
+<rect x="700" y="42" width="18" height="18" rx="5" fill="#ece5fb" stroke="#6b3fd4" stroke-width="1.5"/>
+<text x="725" y="56" font-size="13" font-weight="400" fill="#5b657c" text-anchor="start">Neural model</text>
+<rect x="831.36" y="42" width="18" height="18" rx="5" fill="#eef1f6" stroke="#7d879c" stroke-width="1.5"/>
+<text x="856.36" y="56" font-size="13" font-weight="400" fill="#5b657c" text-anchor="start">Rule-based</text>
+<rect x="948.1600000000001" y="42" width="18" height="18" rx="5" fill="#fdf0d5" stroke="#b26a00" stroke-width="1.5"/>
+<text x="973.1600000000001" y="56" font-size="13" font-weight="400" fill="#5b657c" text-anchor="start">Storage</text>
+<rect x="1043.1200000000001" y="42" width="18" height="18" rx="5" fill="#fde4de" stroke="#c8321a" stroke-width="1.5"/>
+<text x="1068.1200000000001" y="56" font-size="13" font-weight="400" fill="#5b657c" text-anchor="start">Verdict / output</text>
+<rect x="80" y="112" width="330" height="62" rx="12" fill="#1c2233"/>
+<text x="96" y="139" font-size="16" font-weight="700" fill="#fff" text-anchor="start">Original image</text>
+<text x="96" y="160" font-size="13" font-weight="400" fill="#c9cfde" text-anchor="start">Registered in the gallery by the artist</text>
+<line x1="245.0" y1="174" x2="245.0" y2="204" stroke="#1c2233" stroke-width="2" marker-end="url(#a)"/>
+<rect x="475" y="112" width="330" height="62" rx="12" fill="#1c2233"/>
+<text x="491" y="139" font-size="16" font-weight="700" fill="#fff" text-anchor="start">Suspect image</text>
+<text x="491" y="160" font-size="13" font-weight="400" fill="#c9cfde" text-anchor="start">A pirated copy or suspected plagiarism</text>
+<line x1="640.0" y1="174" x2="640.0" y2="204" stroke="#1c2233" stroke-width="2" marker-end="url(#a)"/>
+<rect x="50" y="206" width="1180" height="160" rx="16" fill="#ffffff" stroke="#e2ded6" stroke-width="1.5"/>
+<text x="72" y="236" font-size="17" font-weight="800" fill="#1c2233" text-anchor="start">① Shared preprocessing</text>
+<text x="303.44000000000005" y="236" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Originals and suspects go through the same steps</text>
+<rect x="80" y="252" width="330" height="96" rx="12" fill="#eef1f6" stroke="#7d879c" stroke-width="1.5"/>
+<text x="96" y="280" font-size="16" font-weight="700" fill="#1c2233" text-anchor="start">Read image</text>
+<rect x="315.6" y="263" width="82.4" height="22" rx="11" fill="#fff" stroke="#7d879c" stroke-width="1"/>
+<text x="356.8" y="278.5" font-size="11.5" font-weight="700" fill="#7d879c" text-anchor="middle">Rule-based</text>
+<text x="96" y="306" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Decode tall strips band by band</text>
+<text x="96" y="327" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Downscale to at most 1200 px wide</text>
+<rect x="475" y="252" width="330" height="96" rx="12" fill="#eef1f6" stroke="#7d879c" stroke-width="1.5"/>
+<text x="491" y="280" font-size="16" font-weight="700" fill="#1c2233" text-anchor="start">Split panels</text>
+<rect x="710.6" y="263" width="82.4" height="22" rx="11" fill="#fff" stroke="#7d879c" stroke-width="1"/>
+<text x="751.8" y="278.5" font-size="11.5" font-weight="700" fill="#7d879c" text-anchor="middle">Rule-based</text>
+<text x="491" y="306" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Recursive XY-cut on the gutters</text>
+<text x="491" y="327" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Long panels become overlapping windows</text>
+<rect x="870" y="252" width="330" height="96" rx="12" fill="#eef1f6" stroke="#7d879c" stroke-width="1.5"/>
+<text x="886" y="280" font-size="16" font-weight="700" fill="#1c2233" text-anchor="start">Filter panels</text>
+<rect x="1105.6" y="263" width="82.4" height="22" rx="11" fill="#fff" stroke="#7d879c" stroke-width="1"/>
+<text x="1146.8" y="278.5" font-size="11.5" font-weight="700" fill="#7d879c" text-anchor="middle">Rule-based</text>
+<text x="886" y="306" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Drop text-only panels (2-3 colors)</text>
+<text x="886" y="327" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Drop nearly empty panels</text>
+<line x1="410" y1="300" x2="471" y2="300" stroke="#1c2233" stroke-width="2" marker-end="url(#a)"/>
+<line x1="805" y1="300" x2="866" y2="300" stroke="#1c2233" stroke-width="2" marker-end="url(#a)"/>
+<line x1="640" y1="366" x2="640" y2="398" stroke="#1c2233" stroke-width="2" marker-end="url(#a)"/>
+<rect x="50" y="400" width="1180" height="206" rx="16" fill="#ffffff" stroke="#e2ded6" stroke-width="1.5"/>
+<text x="72" y="430" font-size="17" font-weight="800" fill="#1c2233" text-anchor="start">② Features per panel</text>
+<text x="284.4" y="430" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Three kinds of features for every remaining panel</text>
+<rect x="80" y="446" width="330" height="140" rx="12" fill="#eef1f6" stroke="#7d879c" stroke-width="1.5"/>
+<text x="96" y="474" font-size="16" font-weight="700" fill="#1c2233" text-anchor="start">Perceptual hashes</text>
+<rect x="315.6" y="457" width="82.4" height="22" rx="11" fill="#fff" stroke="#7d879c" stroke-width="1"/>
+<text x="356.8" y="472.5" font-size="11.5" font-weight="700" fill="#7d879c" text-anchor="middle">Rule-based</text>
+<text x="96" y="500" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">pHash + dHash (64 bits each)</text>
+<text x="96" y="521" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Also hashed after a horizontal flip</text>
+<text x="96" y="542" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">→ spots identical / recompressed copies</text>
+<rect x="475" y="446" width="330" height="140" rx="12" fill="#ece5fb" stroke="#6b3fd4" stroke-width="1.5"/>
+<text x="491" y="474" font-size="16" font-weight="700" fill="#1c2233" text-anchor="start">DINOv2-small (color)</text>
+<rect x="697.72" y="457" width="95.28" height="22" rx="11" fill="#fff" stroke="#6b3fd4" stroke-width="1"/>
+<text x="745.36" y="472.5" font-size="11.5" font-weight="700" fill="#6b3fd4" text-anchor="middle">Neural model</text>
+<text x="491" y="500" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">224×224 input → 16×16 patch tokens</text>
+<text x="491" y="521" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Layer 4 = texture · 8, 12 = composition</text>
+<text x="491" y="542" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">→ per-layer descriptors + patch features</text>
+<rect x="870" y="446" width="330" height="140" rx="12" fill="#ece5fb" stroke="#6b3fd4" stroke-width="1.5"/>
+<text x="886" y="474" font-size="16" font-weight="700" fill="#1c2233" text-anchor="start">Line art + DINOv2-small</text>
+<rect x="1092.72" y="457" width="95.28" height="22" rx="11" fill="#fff" stroke="#6b3fd4" stroke-width="1"/>
+<text x="1140.36" y="472.5" font-size="11.5" font-weight="700" fill="#6b3fd4" text-anchor="middle">Neural model</text>
+<text x="886" y="500" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Sobel keeps outlines, drops color</text>
+<text x="886" y="521" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Fed to the same model again</text>
+<text x="886" y="542" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">→ features for recolored / traced art</text>
+<line x1="245.0" y1="606" x2="245.0" y2="652" stroke="#1c2233" stroke-width="2" marker-end="url(#a)"/>
+<text x="257.0" y="631.0" font-size="13" font-weight="700" fill="#1c2233" text-anchor="start">If original: store</text>
+<rect x="80" y="654" width="330" height="96" rx="12" fill="#fdf0d5" stroke="#b26a00" stroke-width="1.5"/>
+<text x="96" y="682" font-size="16" font-weight="700" fill="#1c2233" text-anchor="start">Gallery (IndexedDB)</text>
+<rect x="334.92" y="665" width="63.080000000000005" height="22" rx="11" fill="#fff" stroke="#b26a00" stroke-width="1"/>
+<text x="366.46" y="680.5" font-size="11.5" font-weight="700" fill="#b26a00" text-anchor="middle">Storage</text>
+<text x="96" y="708" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Panel thumbnails + hashes + features</text>
+<text x="96" y="729" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Never leaves the browser</text>
+<path d="M 1035.0 606 V 790" fill="none" stroke="#1c2233" stroke-width="2" marker-end="url(#a)"/>
+<text x="1047.0" y="700" font-size="13" font-weight="700" fill="#1c2233" text-anchor="start">If suspect: compare</text>
+<line x1="245.0" y1="750" x2="245.0" y2="790" stroke="#1c2233" stroke-width="2" marker-end="url(#a)"/>
+<text x="257.0" y="774.0" font-size="13" font-weight="700" fill="#1c2233" text-anchor="start">Compared against</text>
+<rect x="50" y="792" width="1180" height="222" rx="16" fill="#ffffff" stroke="#e2ded6" stroke-width="1.5"/>
+<text x="72" y="822" font-size="17" font-weight="800" fill="#1c2233" text-anchor="start">③ Compare with gallery</text>
+<text x="303.44000000000005" y="822" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Each suspect panel is checked against the whole gallery</text>
+<rect x="80" y="838" width="259" height="158" rx="12" fill="#eef1f6" stroke="#7d879c" stroke-width="1.5"/>
+<text x="96" y="866" font-size="16" font-weight="700" fill="#1c2233" text-anchor="start">1 · Hash check</text>
+<rect x="244.60000000000002" y="849" width="82.4" height="22" rx="11" fill="#fff" stroke="#7d879c" stroke-width="1"/>
+<text x="285.8" y="864.5" font-size="11.5" font-weight="700" fill="#7d879c" text-anchor="middle">Rule-based</text>
+<text x="96" y="892" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Similarity from Hamming distance</text>
+<text x="96" y="913" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">0.90 or higher means</text>
+<text x="96" y="934" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">practically the same picture</text>
+<rect x="367" y="838" width="259" height="158" rx="12" fill="#ece5fb" stroke="#6b3fd4" stroke-width="1.5"/>
+<text x="383" y="866" font-size="16" font-weight="700" fill="#1c2233" text-anchor="start">2 · Shortlist</text>
+<rect x="557.36" y="849" width="56.64" height="22" rx="11" fill="#fff" stroke="#6b3fd4" stroke-width="1"/>
+<text x="585.68" y="864.5" font-size="11.5" font-weight="700" fill="#6b3fd4" text-anchor="middle">Neural</text>
+<text x="383" y="892" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">DINOv2 layer 8, 12 descriptors</text>
+<text x="383" y="913" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Top 6 panels by cosine similarity</text>
+<text x="383" y="934" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">go on to the next step</text>
+<rect x="654" y="838" width="259" height="158" rx="12" fill="#eef1f6" stroke="#7d879c" stroke-width="1.5"/>
+<text x="670" y="866" font-size="16" font-weight="700" fill="#1c2233" text-anchor="start">3 · Patch match</text>
+<rect x="818.6" y="849" width="82.4" height="22" rx="11" fill="#fff" stroke="#7d879c" stroke-width="1"/>
+<text x="859.8" y="864.5" font-size="11.5" font-weight="700" fill="#7d879c" text-anchor="middle">Rule-based</text>
+<text x="670" y="892" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Nearest layer-12 patch matches</text>
+<text x="670" y="913" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">RANSAC checks the geometry</text>
+<text x="670" y="934" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">(scale, shift, flip)</text>
+<text x="670" y="955" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">→ structure, texture, heatmap</text>
+<rect x="941" y="838" width="259" height="158" rx="12" fill="#ece5fb" stroke="#6b3fd4" stroke-width="1.5"/>
+<text x="957" y="866" font-size="16" font-weight="700" fill="#1c2233" text-anchor="start">4 · Line-art retry</text>
+<rect x="1131.36" y="849" width="56.64" height="22" rx="11" fill="#fff" stroke="#6b3fd4" stroke-width="1"/>
+<text x="1159.68" y="864.5" font-size="11.5" font-weight="700" fill="#6b3fd4" text-anchor="middle">Neural</text>
+<text x="957" y="892" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Only if structure score &lt; 0.68</text>
+<text x="957" y="913" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Repeat steps 2-3 on line art</text>
+<text x="957" y="934" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">→ catches recolored tracing</text>
+<line x1="339" y1="917" x2="363" y2="917" stroke="#1c2233" stroke-width="2" marker-end="url(#a)"/>
+<line x1="626" y1="917" x2="650" y2="917" stroke="#1c2233" stroke-width="2" marker-end="url(#a)"/>
+<line x1="913" y1="917" x2="937" y2="917" stroke="#1c2233" stroke-width="2" marker-end="url(#a)" stroke-dasharray="6 5"/>
+<line x1="640" y1="1014" x2="640" y2="1046" stroke="#1c2233" stroke-width="2" marker-end="url(#a)"/>
+<rect x="50" y="1048" width="1180" height="160" rx="16" fill="#ffffff" stroke="#e2ded6" stroke-width="1.5"/>
+<text x="72" y="1078" font-size="17" font-weight="800" fill="#1c2233" text-anchor="start">④ Verdict</text>
+<rect x="80" y="1094" width="330" height="96" rx="12" fill="#fde4de" stroke="#c8321a" stroke-width="1.5"/>
+<text x="96" y="1122" font-size="16" font-weight="700" fill="#1c2233" text-anchor="start">Panel verdict</text>
+<rect x="276.96" y="1105" width="121.04" height="22" rx="11" fill="#fff" stroke="#c8321a" stroke-width="1"/>
+<text x="337.48" y="1120.5" font-size="11.5" font-weight="700" fill="#c8321a" text-anchor="middle">Verdict / output</text>
+<text x="96" y="1148" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Structure ≥ 0.68 likely · ≥ 0.64 suspected</text>
+<text x="96" y="1169" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Type: identical · edited · traced?</text>
+<rect x="475" y="1094" width="330" height="96" rx="12" fill="#fde4de" stroke="#c8321a" stroke-width="1.5"/>
+<text x="491" y="1122" font-size="16" font-weight="700" fill="#1c2233" text-anchor="start">Image verdict</text>
+<rect x="671.96" y="1105" width="121.04" height="22" rx="11" fill="#fff" stroke="#c8321a" stroke-width="1"/>
+<text x="732.48" y="1120.5" font-size="11.5" font-weight="700" fill="#c8321a" text-anchor="middle">Verdict / output</text>
+<text x="491" y="1148" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">If any one panel is a copy,</text>
+<text x="491" y="1169" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">the whole image counts as a copy</text>
+<rect x="870" y="1094" width="330" height="96" rx="12" fill="#fde4de" stroke="#c8321a" stroke-width="1.5"/>
+<text x="886" y="1122" font-size="16" font-weight="700" fill="#1c2233" text-anchor="start">Result view</text>
+<rect x="1066.96" y="1105" width="121.04" height="22" rx="11" fill="#fff" stroke="#c8321a" stroke-width="1"/>
+<text x="1127.48" y="1120.5" font-size="11.5" font-weight="700" fill="#c8321a" text-anchor="middle">Verdict / output</text>
+<text x="886" y="1148" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Verdict badge + similarity score</text>
+<text x="886" y="1169" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Panels side by side + heatmap</text>
+<line x1="410" y1="1142" x2="471" y2="1142" stroke="#1c2233" stroke-width="2" marker-end="url(#a)"/>
+<line x1="805" y1="1142" x2="866" y2="1142" stroke="#1c2233" stroke-width="2" marker-end="url(#a)"/>
+<rect x="50" y="1240" width="1180" height="160" rx="16" fill="#ffffff" stroke="#e2ded6" stroke-width="1.5"/>
+<text x="72" y="1270" font-size="17" font-weight="800" fill="#1c2233" text-anchor="start">⑤ AI-generated flag (experimental)</text>
+<text x="417.68" y="1270" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Separate from copy detection; uses the suspect panels from ①</text>
+<rect x="80" y="1286" width="330" height="96" rx="12" fill="#eef1f6" stroke="#7d879c" stroke-width="1.5"/>
+<text x="96" y="1314" font-size="16" font-weight="700" fill="#1c2233" text-anchor="start">Build views</text>
+<rect x="315.6" y="1297" width="82.4" height="22" rx="11" fill="#fff" stroke="#7d879c" stroke-width="1"/>
+<text x="356.8" y="1312.5" font-size="11.5" font-weight="700" fill="#7d879c" text-anchor="middle">Rule-based</text>
+<text x="96" y="1340" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Pick the 3 largest drawn panels</text>
+<text x="96" y="1361" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">Whole panel + native 512 px crop</text>
+<rect x="475" y="1286" width="330" height="96" rx="12" fill="#ece5fb" stroke="#6b3fd4" stroke-width="1.5"/>
+<text x="491" y="1314" font-size="16" font-weight="700" fill="#1c2233" text-anchor="start">AI-Anime-Image-Detector</text>
+<rect x="736.36" y="1297" width="56.64" height="22" rx="11" fill="#fff" stroke="#6b3fd4" stroke-width="1"/>
+<text x="764.68" y="1312.5" font-size="11.5" font-weight="700" fill="#6b3fd4" text-anchor="middle">Neural</text>
+<text x="491" y="1340" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">ViT-B classifier, 512×512 input</text>
+<text x="491" y="1361" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">AI probability for each view</text>
+<rect x="870" y="1286" width="330" height="96" rx="12" fill="#fde4de" stroke="#c8321a" stroke-width="1.5"/>
+<text x="886" y="1314" font-size="16" font-weight="700" fill="#1c2233" text-anchor="start">Aggregate → badge</text>
+<rect x="1066.96" y="1297" width="121.04" height="22" rx="11" fill="#fff" stroke="#c8321a" stroke-width="1"/>
+<text x="1127.48" y="1312.5" font-size="11.5" font-weight="700" fill="#c8321a" text-anchor="middle">Verdict / output</text>
+<text x="886" y="1340" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">If the top-2 mean is 0.5 or higher,</text>
+<text x="886" y="1361" font-size="13.5" font-weight="400" fill="#5b657c" text-anchor="start">show “AI-generated · experimental”</text>
+<line x1="410" y1="1334" x2="471" y2="1334" stroke="#1c2233" stroke-width="2" marker-end="url(#a)"/>
+<line x1="805" y1="1334" x2="866" y2="1334" stroke="#1c2233" stroke-width="2" marker-end="url(#a)"/>
+<line x1="1035.0" y1="1284" x2="1035.0" y2="1194" stroke="#1c2233" stroke-width="2" marker-end="url(#a)" stroke-dasharray="6 5"/>
+<text x="60" y="1424" font-size="13" font-weight="400" fill="#5b657c" text-anchor="start">Thresholds (0.68 / 0.64 / 0.90) were fitted on 10 real webtoon series. Dashed arrows are conditional or supplementary flows.</text>
+</svg>
